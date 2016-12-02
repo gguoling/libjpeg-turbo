@@ -117,8 +117,6 @@ endif()
 if(ENABLE_STATIC)
   install(TARGETS turbojpeg-static ARCHIVE DESTINATION lib)
 endif()
-install(FILES ${CMAKE_SOURCE_DIR}/turbojpeg.h DESTINATION include)
-
-install(FILES ${CMAKE_BINARY_DIR}/jconfig.h ${CMAKE_SOURCE_DIR}/jerror.h
-  ${CMAKE_SOURCE_DIR}/jmorecfg.h ${CMAKE_SOURCE_DIR}/jpeglib.h
-  DESTINATION include)
+install(FILES
+	${CMAKE_SOURCE_DIR}/turbojpeg.h
+	DESTINATION include)
