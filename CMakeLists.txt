@@ -78,6 +78,10 @@ foreach(KEYWORD "inline" "__inline__" "__inline")
 	endif()
 endforeach()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+	add_definitions("-DNO_GETENV" "-DNO_PUTENV")
+endif()
+
 configure_file(jconfig.h.cmake.in jconfig.h)
 configure_file(jconfigint.h.cmake.in jconfigint.h)
 
