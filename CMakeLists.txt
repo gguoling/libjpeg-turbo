@@ -22,9 +22,8 @@
 
 cmake_minimum_required(VERSION 3.0)
 
-project(libjpeg-turbo
-	LANGUAGES C
-)
+project(libjpeg-turbo LANGUAGES C)
+
 set(PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
 set(VERSION 1.5.2)
 
@@ -33,15 +32,15 @@ list(GET VERSION_TRIPLET 0 VERSION_MAJOR)
 list(GET VERSION_TRIPLET 1 VERSION_MINOR)
 list(GET VERSION_TRIPLET 2 VERSION_REVISION)
 function(pad_number NUMBER OUTPUT_LEN)
-  string(LENGTH "${${NUMBER}}" INPUT_LEN)
-  if(INPUT_LEN LESS OUTPUT_LEN)
-    math(EXPR ZEROES "${OUTPUT_LEN} - ${INPUT_LEN} - 1")
-    set(NUM ${${NUMBER}})
-    foreach(C RANGE ${ZEROES})
-      set(NUM "0${NUM}")
-    endforeach()
-    set(${NUMBER} ${NUM} PARENT_SCOPE)
-  endif()
+	string(LENGTH "${${NUMBER}}" INPUT_LEN)
+	if(INPUT_LEN LESS OUTPUT_LEN)
+		math(EXPR ZEROES "${OUTPUT_LEN} - ${INPUT_LEN} - 1")
+		set(NUM ${${NUMBER}})
+		foreach(C RANGE ${ZEROES})
+			set(NUM "0${NUM}")
+		endforeach()
+		set(${NUMBER} ${NUM} PARENT_SCOPE)
+	endif()
 endfunction()
 pad_number(VERSION_MINOR 3)
 pad_number(VERSION_REVISION 3)
@@ -52,6 +51,8 @@ string(TIMESTAMP BUILD "%Y%m%d")
 
 option(ENABLE_SHARED "Build shared library." YES)
 option(ENABLE_STATIC "Build static library." YES)
+
+include(GNUInstallDirs)
 
 set(SO_AGE 0)
 set(JPEG_LIB_VERSION 62)
@@ -85,42 +86,90 @@ endif()
 configure_file(jconfig.h.cmake.in jconfig.h)
 configure_file(jconfigint.h.cmake.in jconfigint.h)
 
-set(JPEG_SOURCES jcapimin.c jcapistd.c jccoefct.c jccolor.c jcdctmgr.c jchuff.c
-  jcinit.c jcmainct.c jcmarker.c jcmaster.c jcomapi.c jcparam.c jcphuff.c
-  jcprepct.c jcsample.c jctrans.c jdapimin.c jdapistd.c jdatadst.c jdatasrc.c
-  jdcoefct.c jdcolor.c jddctmgr.c jdhuff.c jdinput.c jdmainct.c jdmarker.c
-  jdmaster.c jdmerge.c jdphuff.c jdpostct.c jdsample.c jdtrans.c jerror.c
-  jfdctflt.c jfdctfst.c jfdctint.c jidctflt.c jidctfst.c jidctint.c jidctred.c
-  jquant1.c jquant2.c jutils.c jmemmgr.c jmemnobs.c
-	jsimd_none.c)
+set(JPEG_SOURCES
+	jcapimin.c
+	jcapistd.c
+	jccoefct.c
+	jccolor.c
+	jcdctmgr.c
+	jchuff.c
+	jcinit.c
+	jcmainct.c
+	jcmarker.c
+	jcmaster.c
+	jcomapi.c
+	jcparam.c
+	jcphuff.c
+	jcprepct.c
+	jcsample.c
+	jctrans.c
+	jdapimin.c
+	jdapistd.c
+	jdatadst.c
+	jdatasrc.c
+	jdcoefct.c
+	jdcolor.c
+	jddctmgr.c
+	jdhuff.c
+	jdinput.c
+	jdmainct.c
+	jdmarker.c
+	jdmaster.c
+	jdmerge.c
+	jdphuff.c
+	jdpostct.c
+	jdsample.c
+	jdtrans.c
+	jerror.c
+	jfdctflt.c
+	jfdctfst.c
+	jfdctint.c
+	jidctflt.c
+	jidctfst.c
+	jidctint.c
+	jidctred.c
+	jquant1.c
+	jquant2.c
+	jutils.c
+	jmemmgr.c
+	jmemnobs.c
+	jsimd_none.c
+)
 
 include_directories("${CMAKE_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
 
-set(TURBOJPEG_SOURCES turbojpeg.c transupp.c jdatadst-tj.c jdatasrc-tj.c)
+set(TURBOJPEG_SOURCES
+	turbojpeg.c
+	transupp.c
+	jdatadst-tj.c
+	jdatasrc-tj.c
+)
 
 if(ENABLE_SHARED)
-  add_library(turbojpeg SHARED ${JPEG_SOURCES} ${TURBOJPEG_SOURCES})
+	add_library(turbojpeg SHARED ${JPEG_SOURCES} ${TURBOJPEG_SOURCES})
 	if(WIN32)
-  	set_target_properties(turbojpeg PROPERTIES DEFINE_SYMBOL DLLDEFINE)
+		set_target_properties(turbojpeg PROPERTIES DEFINE_SYMBOL DLLDEFINE)
 	endif()
 endif()
 
 if(ENABLE_STATIC)
-  add_library(turbojpeg-static STATIC ${JPEG_SOURCES} ${TURBOJPEG_SOURCES})
-  if(NOT MSVC)
-    set_target_properties(turbojpeg-static PROPERTIES OUTPUT_NAME turbojpeg)
-  endif()
+	add_library(turbojpeg-static STATIC ${JPEG_SOURCES} ${TURBOJPEG_SOURCES})
+	if(NOT MSVC)
+		set_target_properties(turbojpeg-static PROPERTIES OUTPUT_NAME turbojpeg)
+	endif()
 endif()
 
 if(ENABLE_SHARED)
-  install(TARGETS turbojpeg
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin)
+	install(TARGETS turbojpeg
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	)
 endif()
 if(ENABLE_STATIC)
-  install(TARGETS turbojpeg-static ARCHIVE DESTINATION lib)
+	install(TARGETS turbojpeg-static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
-install(FILES
-	${CMAKE_SOURCE_DIR}/turbojpeg.h
-	DESTINATION include)
+
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/turbojpeg.h"
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
