@@ -68,6 +68,6 @@ add_executable(jcstest ../jcstest.c)
 target_link_libraries(jcstest jpeg)
 
 install(TARGETS jpeg cjpeg djpeg jpegtran
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
